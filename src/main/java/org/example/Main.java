@@ -5,9 +5,20 @@ package org.example;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
+        String DB_URL = "jdbc:postgresql:meals_db";
+        String USER = "postgres";
+        String PASS = "root";
+
+        Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+        connection.setAutoCommit(true);
+
+        DatabaseInitializer.createTables(connection);
 
         Scanner scan = new Scanner(System.in);
         List<Meal> meals = new ArrayList<>();
