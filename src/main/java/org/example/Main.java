@@ -16,6 +16,7 @@ public class Main {
         String PASS = "root";
 
         Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+        MealDao mealDao = new MealDao(connection);
         connection.setAutoCommit(true);
 
         DatabaseInitializer.createTables(connection);
@@ -28,19 +29,23 @@ public class Main {
             System.out.println("What would you like to do (add, show, exit)?");
             operation = scan.nextLine();
 
-            if(operation.equals("add")){
+            if (operation.equals("add")) {
                 Meal meal = Meal.addNewMeal(scan);
-                meals.add(meal);
-            } else if (operation.equals("show")) {
-                    if(meals.isEmpty()){
-                        System.out.println("No meals saved. Add a meal first.");
-                    } else {
 
-                        for (var meal : meals) {
-                            Meal.printMealInfo(meal);
-                        }
+                int mealId = mealDao.getNextMealId();
+                mealDao.saveMeal(meal, mealId);
+                mealDao.saveIngredients(meal.getIngredients(), mealId);
+            } else if (operation.equals("show")) {
+                List<Meal> mealsFromDb = mealDao.getAllMeals();
+
+                if (mealsFromDb.isEmpty()) {
+                    System.out.println("No meals saved. Add a meal first.");
+                } else {
+                    for (Meal meal : mealsFromDb) {
+                        Meal.printMealInfo(meal);
                     }
-            } else if (operation.equals("exit")){
+                }
+        } else if (operation.equals("exit")){
                 System.out.println("Bye!");
             } else {
                 continue;
