@@ -36,15 +36,32 @@ public class Main {
                 mealDao.saveMeal(meal, mealId);
                 mealDao.saveIngredients(meal.getIngredients(), mealId);
             } else if (operation.equals("show")) {
-                List<Meal> mealsFromDb = mealDao.getAllMeals();
+               // List<Meal> mealsFromDb = mealDao.getAllMeals();
+                String mealCategory;
+                System.out.println("Which category do you want to print (breakfast, lunch, dinner)?");
+                while (true) {
+                    mealCategory = scan.nextLine();
 
-                if (mealsFromDb.isEmpty()) {
-                    System.out.println("No meals saved. Add a meal first.");
-                } else {
-                    for (Meal meal : mealsFromDb) {
-                        Meal.printMealInfo(meal);
+                    if (mealCategory.equals("breakfast") ||
+                            mealCategory.equals("lunch") ||
+                            mealCategory.equals("dinner")) {
+                        break;
+                    } else {
+                        System.out.println("Wrong meal category! Choose from: breakfast, lunch, dinner.");
                     }
                 }
+                    List<Meal> mealsFromDbByCategory = mealDao.getAllMealsByCategory(mealCategory);
+
+                    if (mealsFromDbByCategory.isEmpty()) {
+                        System.out.println("No meals found.");
+                    } else {
+                        System.out.println("Category: " + mealCategory);
+
+                        for (Meal meal : mealsFromDbByCategory) {
+                            Meal.printMealInfo(meal);
+                        }
+                        System.out.println();
+                    }
         } else if (operation.equals("exit")){
                 System.out.println("Bye!");
             } else {

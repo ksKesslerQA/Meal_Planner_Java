@@ -102,5 +102,59 @@ public class MealDao {
         return meals;
     }
 
+    public List<Meal> getAllMealsByCategory(String category) throws SQLException {
+
+        String sql = """
+        SELECT m.meal_id, m.category, m.meal, i.ingredient
+        FROM meals m
+        JOIN ingredients i ON m.meal_id = i.meal_id
+        WHERE m.category = ?
+        ORDER BY m.meal_id, i.ingredient_id
+        """;
+
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setString(1, category);
+
+        ResultSet rs = statement.executeQuery();
+
+        List<Meal> meals = new ArrayList<>();
+
+        int currentMealId = -1;
+        Meal currentMeal = null;
+        List<String> ingredients = null;
+
+        while (rs.next()) {
+            int mealId = rs.getInt("meal_id");
+
+            if (mealId != currentMealId) {
+                if (currentMeal != null) {
+                    meals.add(currentMeal);
+                }
+
+                ingredients = new ArrayList<>();
+                currentMeal = new Meal(
+                        rs.getString("category"),
+                        rs.getString("meal"),
+                        ingredients
+                );
+
+                currentMealId = mealId;
+            }
+
+            ingredients.add(rs.getString("ingredient"));
+        }
+
+        if (currentMeal != null) {
+            meals.add(currentMeal);
+        }
+
+        rs.close();
+        statement.close();
+
+        return meals;
+    }
+
+
+
 
 }
