@@ -13,15 +13,24 @@ public class DatabaseInitializer {
         statement.executeUpdate("""
             CREATE TABLE IF NOT EXISTS meals (
                 meal_id INTEGER,
-                category VARCHAR(50),
+                category VARCHAR(15),
                 meal VARCHAR(50)
             )
         """);
 
         statement.executeUpdate("""
             CREATE TABLE IF NOT EXISTS ingredients (
-                ingredient_id INTEGER,
+                ingredient_id SERIAL,
                 ingredient VARCHAR(50),
+                meal_id INTEGER
+            )
+        """);
+
+        statement.executeUpdate("""
+            CREATE TABLE IF NOT EXISTS plan (
+                day VARCHAR(15),
+                meal_option VARCHAR(50),
+                meal_category VARCHAR(15),
                 meal_id INTEGER
             )
         """);

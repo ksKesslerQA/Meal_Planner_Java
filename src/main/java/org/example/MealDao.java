@@ -109,7 +109,7 @@ public class MealDao {
         FROM meals m
         JOIN ingredients i ON m.meal_id = i.meal_id
         WHERE m.category = ?
-        ORDER BY m.meal_id, i.ingredient_id
+        ORDER BY m.meal
         """;
 
         PreparedStatement statement = connection.prepareStatement(sql);
@@ -155,6 +155,30 @@ public class MealDao {
     }
 
 
+    public int getMealIdByName(String nameOfMeal) throws SQLException {
+        String sql = """
+        SELECT meal_id
+        FROM meals
+        WHERE meal = ?
+        """;
 
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setString(1, nameOfMeal);
 
+        ResultSet rs = statement.executeQuery();
+        int mealId = -1;
+
+        if (rs.next()) {
+            mealId = rs.getInt("meal_id");
+        }
+
+        if (mealId == -1) {
+            throw new SQLException("Meal not found: " + nameOfMeal);
+        }
+
+        rs.close();
+        statement.close();
+
+        return mealId;
+    }
 }
