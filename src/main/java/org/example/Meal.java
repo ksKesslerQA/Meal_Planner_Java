@@ -38,7 +38,7 @@ public class Meal {
             if (mealCategory.equals("breakfast") ||
                     mealCategory.equals("lunch") ||
                     mealCategory.equals("dinner")) {
-                break; // вихід з циклу, якщо все ок
+                break;
             } else {
                 System.out.println("Wrong meal category! Choose from: breakfast, lunch, dinner.");
             }
@@ -94,8 +94,8 @@ public class Meal {
     };
 
     static void printMealInfo(Meal meal){
-        System.out.println("\nCategory: " + meal.getMealCategory());
-        System.out.println("Name: " + meal.getNameOfMeal());
+
+        System.out.println("\nName: " + meal.getNameOfMeal());
         System.out.println("Ingredients:");
 
         for (String ingredient : meal.getIngredients()) {
