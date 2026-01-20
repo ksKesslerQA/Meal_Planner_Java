@@ -52,7 +52,7 @@ public class MealDao {
         for (Ingredient ingredient : ingredients) {
             ps.setString(1, ingredient.getName());
             ps.setDouble(2, ingredient.getAmount());
-            ps.setString(3, ingredient.getUnit().name());
+            ps.setString(3, ingredient.getUnit().getLabel());
             ps.setInt(4, mealId);
             ps.executeUpdate();
         }
@@ -101,7 +101,7 @@ public class MealDao {
             ingredients.add(new Ingredient(
                     rs.getString("name"),
                     rs.getDouble("amount"),
-                    Unit.valueOf(rs.getString("unit"))
+                    Unit.fromString(rs.getString("unit"))
             ));
         }
 
@@ -160,7 +160,7 @@ public class MealDao {
             ingredients.add(new Ingredient(
                     rs.getString("name"),
                     rs.getDouble("amount"),
-                    Unit.valueOf(rs.getString("unit"))
+                    Unit.fromString(rs.getString("unit"))
             ));
         }
 

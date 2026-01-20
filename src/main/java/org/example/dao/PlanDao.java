@@ -99,7 +99,7 @@ public class PlanDao {
                     writer.write(name + System.lineSeparator());
                 } else {
                     writer.write(name + " " + amount + " " +
-                            Unit.valueOf(unit).getLabel() + System.lineSeparator());
+                            Unit.fromString(rs.getString("unit")) + System.lineSeparator());
                 }
             }
         } catch (java.io.IOException e) {
