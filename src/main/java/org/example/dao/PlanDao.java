@@ -1,6 +1,8 @@
-package org.example;
+package org.example.dao;
 
-import javax.swing.plaf.nimbus.State;
+import org.example.model.MealPlan;
+import org.example.model.Unit;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,11 +76,14 @@ public class PlanDao {
 
     public void generateIngredients(String filename) throws SQLException {
         String sql = """
-        SELECT i.ingredient, COUNT(*) AS amount
-        FROM plan p
-        JOIN ingredients i ON p.meal_id = i.meal_id
-        GROUP BY i.ingredient
-    """;
+        SELECT i.name,
+               SUM(i.amount) AS total_amount,
+               i.unit
+        FROM ingredients i
+        JOIN plan p ON p.meal_id = i.meal_id
+        GROUP BY i.name, i.unit
+        ORDER BY i.name
+        """;
 
         try (
                 Statement st = connection.createStatement();
@@ -86,18 +91,20 @@ public class PlanDao {
                 java.io.FileWriter writer = new java.io.FileWriter(filename)
         ) {
             while (rs.next()) {
-                String ingredient = rs.getString("ingredient");
-                int amount = rs.getInt("amount");
+                String name = rs.getString("name");
+                double amount = rs.getDouble("total_amount");
+                String unit = rs.getString("unit");
 
-                if (amount > 1) {
-                    writer.write(ingredient + " x" + amount + System.lineSeparator());
+                if (amount == 1 && unit.equals("PCS")) {
+                    writer.write(name + System.lineSeparator());
                 } else {
-                    writer.write(ingredient + System.lineSeparator());
+                    writer.write(name + " " + amount + " " +
+                            Unit.valueOf(unit).getLabel() + System.lineSeparator());
                 }
             }
         } catch (java.io.IOException e) {
             throw new RuntimeException("Failed to write shopping list", e);
-            }
         }
+    }
 
     }

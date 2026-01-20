@@ -1,4 +1,4 @@
-package org.example;
+package org.example.dao;
 
 import java.sql.Connection;
 import java.sql.Statement;
@@ -20,8 +20,10 @@ public class DatabaseInitializer {
 
         statement.executeUpdate("""
             CREATE TABLE IF NOT EXISTS ingredients (
-                ingredient_id SERIAL,
-                ingredient VARCHAR(50),
+                ingredient_id SERIAL PRIMARY KEY,
+                name VARCHAR(50),
+                amount DOUBLE PRECISION,
+                unit VARCHAR(10),
                 meal_id INTEGER
             )
         """);

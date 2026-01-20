@@ -1,6 +1,10 @@
 package org.example;
 
-import java.util.ArrayList;
+import org.example.dao.*;
+import org.example.model.DaysOfTheWeek;
+import org.example.model.Meal;
+import org.example.model.MealPlan;
+
 import java.util.List;
 import java.util.Scanner;
 import java.sql.Connection;
@@ -24,7 +28,7 @@ public class Main {
 
         String operation = "";
         while(!operation.equals("exit")) {
-            System.out.println("What would you like to do (add, show, plan, list plan, save, exit)?");
+            System.out.println("What would you like to do (add, show, plan, list plan, save, reset, exit)?");
             operation = scan.nextLine();
 
             if (operation.equals("add")) {
@@ -125,7 +129,13 @@ public class Main {
                     System.out.println("Saved!");
                 }
 
-            }else if (operation.equals("exit")) {
+            } else if (operation.equals("reset")) {
+
+                DatabaseCleaner.clearAll(connection);
+                DatabaseSeeder.seed(mealDao);
+                System.out.println("Database reset.");
+
+            } else if (operation.equals("exit")) {
                 System.out.println("Bye!");
             } else {
                 continue;
