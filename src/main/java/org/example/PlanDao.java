@@ -72,4 +72,32 @@ public class PlanDao {
             return plans;
         }
 
-}
+    public void generateIngredients(String filename) throws SQLException {
+        String sql = """
+        SELECT i.ingredient, COUNT(*) AS amount
+        FROM plan p
+        JOIN ingredients i ON p.meal_id = i.meal_id
+        GROUP BY i.ingredient
+    """;
+
+        try (
+                Statement st = connection.createStatement();
+                ResultSet rs = st.executeQuery(sql);
+                java.io.FileWriter writer = new java.io.FileWriter(filename)
+        ) {
+            while (rs.next()) {
+                String ingredient = rs.getString("ingredient");
+                int amount = rs.getInt("amount");
+
+                if (amount > 1) {
+                    writer.write(ingredient + " x" + amount + System.lineSeparator());
+                } else {
+                    writer.write(ingredient + System.lineSeparator());
+                }
+            }
+        } catch (java.io.IOException e) {
+            throw new RuntimeException("Failed to write shopping list", e);
+            }
+        }
+
+    }

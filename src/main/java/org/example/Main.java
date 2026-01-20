@@ -24,7 +24,7 @@ public class Main {
 
         String operation = "";
         while(!operation.equals("exit")) {
-            System.out.println("What would you like to do (add, show, plan, list plan, exit)?");
+            System.out.println("What would you like to do (add, show, plan, list plan, save, exit)?");
             operation = scan.nextLine();
 
             if (operation.equals("add")) {
@@ -111,7 +111,21 @@ public class Main {
                     }
                 }
 
-            } else if (operation.equals("exit")) {
+            } else if (operation.equals("save")) {
+                List<MealPlan> plans = planDao.getWeeklyPlan();
+
+                if (plans.isEmpty()) {
+                    System.out.println("Unable to save. Plan your meals first.");
+                } else {
+                    System.out.println("Input a filename:");
+                    String filename = scan.nextLine();
+
+                    planDao.generateIngredients(filename);
+
+                    System.out.println("Saved!");
+                }
+
+            }else if (operation.equals("exit")) {
                 System.out.println("Bye!");
             } else {
                 continue;
