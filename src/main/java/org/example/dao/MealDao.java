@@ -101,7 +101,7 @@ public class MealDao {
             ingredients.add(new Ingredient(
                     rs.getString("name"),
                     rs.getDouble("amount"),
-                    Unit.fromString(rs.getString("unit"))
+                    Unit.fromDb(rs.getString("unit"))
             ));
         }
 
@@ -160,7 +160,7 @@ public class MealDao {
             ingredients.add(new Ingredient(
                     rs.getString("name"),
                     rs.getDouble("amount"),
-                    Unit.fromString(rs.getString("unit"))
+                    Unit.fromDb(rs.getString("unit"))
             ));
         }
 

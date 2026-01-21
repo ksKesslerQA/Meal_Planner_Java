@@ -4,6 +4,8 @@ import org.example.dao.*;
 import org.example.model.DaysOfTheWeek;
 import org.example.model.Meal;
 import org.example.model.MealPlan;
+import org.example.service.PlanService;
+import org.example.service.ShoppingListService;
 
 import java.util.List;
 import java.util.Scanner;
@@ -20,6 +22,8 @@ public class Main {
         Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
         MealDao mealDao = new MealDao(connection);
         PlanDao planDao = new PlanDao(connection);
+        PlanService planService = new PlanService(mealDao, planDao);
+        ShoppingListService shoppingListService = new ShoppingListService(planDao);
         connection.setAutoCommit(true);
 
         DatabaseInitializer.createTables(connection);
@@ -65,40 +69,7 @@ public class Main {
                     System.out.println();
                 }
             } else if (operation.equals("plan")) {
-
-                planDao.clearPlan();
-
-                for (DaysOfTheWeek day : DaysOfTheWeek.values()) {
-                    System.out.println(day);
-
-                    for (String category : List.of("breakfast", "lunch", "dinner")) {
-
-                        List<Meal> mealsByCategory = mealDao.getAllMealsByCategory(category);
-                        mealsByCategory.forEach(m -> System.out.println(m.getNameOfMeal()));
-
-                        System.out.println("Choose the " + category + " for " + day + " from the list above:");
-
-                        Meal chosenMeal = null;
-                        while (chosenMeal == null) {
-                            String input = scan.nextLine();
-                            for (Meal meal : mealsByCategory) {
-                                if (meal.getNameOfMeal().equals(input)) {
-                                    chosenMeal = meal;
-                                    break;
-                                }
-                            }
-                            if (chosenMeal == null) {
-                                System.out.println("This meal doesn’t exist. Choose a meal from the list above.");
-                            }
-                        }
-
-                        int mealId = mealDao.getMealIdByName(chosenMeal.getNameOfMeal());
-                        planDao.savePlanItem(day.name(), category, chosenMeal.getNameOfMeal(), mealId);
-                    }
-
-                    System.out.println("Yeah! We planned the meals for " + day + ".\n");
-                }
-
+                planService.createWeeklyPlan(scan);
 
             } else if (operation.equals("list plan")) {
                 List<MealPlan> plans = planDao.getWeeklyPlan();
@@ -116,15 +87,13 @@ public class Main {
                 }
 
             } else if (operation.equals("save")) {
-                List<MealPlan> plans = planDao.getWeeklyPlan();
-
-                if (plans.isEmpty()) {
+                if (planDao.getWeeklyPlan().isEmpty()) {
                     System.out.println("Unable to save. Plan your meals first.");
                 } else {
                     System.out.println("Input a filename:");
                     String filename = scan.nextLine();
 
-                    planDao.generateIngredients(filename);
+                    shoppingListService.saveShoppingList(filename);
 
                     System.out.println("Saved!");
                 }

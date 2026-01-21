@@ -4,6 +4,7 @@ import org.example.model.Ingredient;
 import org.example.model.Unit;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class IngredientParser {
@@ -14,19 +15,15 @@ public class IngredientParser {
         String[] parts = input.split(",");
 
         for (String part : parts) {
-            String[] tokens = part.trim().split(" ");
+            String[] tokens = part.trim().split("\\s+");
+            String unit = tokens[tokens.length - 1];
+            double amount = Double.parseDouble(tokens[tokens.length - 2]);
 
-            if (tokens.length != 3) {
-                throw new IllegalArgumentException(
-                        "Wrong format. Use: name amount unit"
-                );
-            }
+            String name = String.join(" ",
+                    Arrays.copyOf(tokens, tokens.length - 2));
 
-            String name = tokens[0];
-            double amount = Double.parseDouble(tokens[1]);
-            Unit unit = Unit.fromString(tokens[2]);
-
-            result.add(new Ingredient(name, amount, unit));
+            Unit parsedUnit = Unit.fromUserInput(unit);
+            result.add(new Ingredient(name, amount, parsedUnit));
         }
 
         return result;
