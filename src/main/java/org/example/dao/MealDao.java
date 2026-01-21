@@ -1,4 +1,8 @@
-package org.example;
+package org.example.dao;
+
+import org.example.model.Ingredient;
+import org.example.model.Meal;
+import org.example.model.Unit;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -40,14 +44,16 @@ public class MealDao {
     }
 
 
-    public void saveIngredients(List<String> ingredients, int mealId) throws SQLException {
-        String sql = "INSERT INTO ingredients (ingredient, meal_id) VALUES (?, ?)";
+    public void saveIngredients(List<Ingredient> ingredients, int mealId) throws SQLException {
+        String sql = "INSERT INTO ingredients (name, amount, unit, meal_id) VALUES (?, ?, ?, ?)";
 
         PreparedStatement ps = connection.prepareStatement(sql);
 
-        for (String ingredient : ingredients) {
-            ps.setString(1, ingredient);
-            ps.setInt(2, mealId);
+        for (Ingredient ingredient : ingredients) {
+            ps.setString(1, ingredient.getName());
+            ps.setDouble(2, ingredient.getAmount());
+            ps.setString(3, ingredient.getUnit().getLabel());
+            ps.setInt(4, mealId);
             ps.executeUpdate();
         }
 
@@ -56,20 +62,24 @@ public class MealDao {
 
     public List<Meal> getAllMeals() throws SQLException {
         String sql = """
-        SELECT m.meal_id, m.category, m.meal, i.ingredient
+        SELECT m.meal_id,
+               m.category,
+               m.meal,
+               i.name,
+               i.amount,
+               i.unit
         FROM meals m
         JOIN ingredients i ON m.meal_id = i.meal_id
-        ORDER BY m.meal_id
+        ORDER BY m.meal, i.ingredient_id
         """;
 
         Statement statement = connection.createStatement();
         ResultSet rs = statement.executeQuery(sql);
 
         List<Meal> meals = new ArrayList<>();
-
         int currentMealId = -1;
         Meal currentMeal = null;
-        List<String> ingredients = null;
+        List<Ingredient> ingredients = null;
 
         while (rs.next()) {
             int mealId = rs.getInt("meal_id");
@@ -85,11 +95,14 @@ public class MealDao {
                         rs.getString("meal"),
                         ingredients
                 );
-
                 currentMealId = mealId;
             }
 
-            ingredients.add(rs.getString("ingredient"));
+            ingredients.add(new Ingredient(
+                    rs.getString("name"),
+                    rs.getDouble("amount"),
+                    Unit.fromString(rs.getString("unit"))
+            ));
         }
 
         if (currentMeal != null) {
@@ -105,23 +118,27 @@ public class MealDao {
     public List<Meal> getAllMealsByCategory(String category) throws SQLException {
 
         String sql = """
-        SELECT m.meal_id, m.category, m.meal, i.ingredient
+        SELECT m.meal_id,
+               m.category,
+               m.meal,
+               i.name,
+               i.amount,
+               i.unit
         FROM meals m
         JOIN ingredients i ON m.meal_id = i.meal_id
         WHERE m.category = ?
-        ORDER BY m.meal
+        ORDER BY m.meal, i.ingredient_id
         """;
 
-        PreparedStatement statement = connection.prepareStatement(sql);
-        statement.setString(1, category);
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setString(1, category);
 
-        ResultSet rs = statement.executeQuery();
+        ResultSet rs = ps.executeQuery();
 
         List<Meal> meals = new ArrayList<>();
-
         int currentMealId = -1;
         Meal currentMeal = null;
-        List<String> ingredients = null;
+        List<Ingredient> ingredients = null;
 
         while (rs.next()) {
             int mealId = rs.getInt("meal_id");
@@ -137,11 +154,14 @@ public class MealDao {
                         rs.getString("meal"),
                         ingredients
                 );
-
                 currentMealId = mealId;
             }
 
-            ingredients.add(rs.getString("ingredient"));
+            ingredients.add(new Ingredient(
+                    rs.getString("name"),
+                    rs.getDouble("amount"),
+                    Unit.fromString(rs.getString("unit"))
+            ));
         }
 
         if (currentMeal != null) {
@@ -149,10 +169,11 @@ public class MealDao {
         }
 
         rs.close();
-        statement.close();
+        ps.close();
 
         return meals;
     }
+
 
 
     public int getMealIdByName(String nameOfMeal) throws SQLException {

@@ -1,4 +1,6 @@
-package org.example;
+package org.example.model;
+
+import org.example.util.IngredientParser;
 
 import java.util.Arrays;
 import java.util.List;
@@ -7,9 +9,9 @@ import java.util.Scanner;
 public class Meal {
     private String mealCategory;
     private String nameOfMeal;
-    private List<String> ingredients;
+    private List<Ingredient> ingredients;
 
-    public Meal(String mealCategory, String nameOfMeal, List<String> ingredients) {
+    public Meal(String mealCategory, String nameOfMeal, List<Ingredient> ingredients) {
         this.mealCategory = mealCategory;
         this.nameOfMeal = nameOfMeal;
         this.ingredients = ingredients;
@@ -23,11 +25,11 @@ public class Meal {
         return nameOfMeal;
     }
 
-    public List<String> getIngredients() {
+    public List<Ingredient> getIngredients() {
         return ingredients;
     }
 
-    static Meal addNewMeal(Scanner scan){
+    public static Meal addNewMeal(Scanner scan){
 
         String mealCategory;
         System.out.println("Which meal do you want to add (breakfast, lunch, dinner)?");
@@ -57,9 +59,12 @@ public class Meal {
             }
         }
 
-        List<String> ingredients;
-        System.out.println("Input the ingredients:");
+        System.out.println("Input ingredients (format: name amount unit, separated by commas):");
+        System.out.println("Example: eggs 2 pcs, milk 200 ml, flour 100 g");
 
+        String input = scan.nextLine();
+        List<Ingredient> ingredients = IngredientParser.parse(input);
+/*
         while (true) {
             String ingredientsInput = scan.nextLine();
 
@@ -84,23 +89,17 @@ public class Meal {
             }
         }
 
-        Meal addedMeal = new Meal(mealCategory, nameOfMeal, ingredients);
+ */
 
-        //printMealInfo(addedMeal);
         System.out.println("The meal has been added!");
 
-        return addedMeal;
+        return new Meal(mealCategory, nameOfMeal, ingredients);
 
     };
 
-    static void printMealInfo(Meal meal){
-
+    public static void printMealInfo(Meal meal) {
         System.out.println("\nName: " + meal.getNameOfMeal());
         System.out.println("Ingredients:");
-
-        for (String ingredient : meal.getIngredients()) {
-            System.out.println(ingredient);
-        }
-
+        meal.getIngredients().forEach(i -> System.out.println(i));
     }
 }
