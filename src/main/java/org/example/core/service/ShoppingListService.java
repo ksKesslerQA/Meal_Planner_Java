@@ -4,10 +4,9 @@ import org.example.core.dao.PlanDao;
 import org.example.core.model.Ingredient;
 import org.example.core.util.UnitConverter;
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ShoppingListService {
 
@@ -17,17 +16,10 @@ public class ShoppingListService {
         this.planDao = planDao;
     }
 
-    public void saveShoppingList(String filename) throws SQLException {
-        List<Ingredient> ingredients = planDao.getPlannedIngredients();
-
-        try (FileWriter writer = new FileWriter(filename)) {
-            for (Ingredient ingredient : ingredients) {
-                Ingredient normalized = UnitConverter.normalize(ingredient);
-                writer.write(normalized.toString() + System.lineSeparator());
-            }
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to write shopping list", e);
-        }
+    public List<Ingredient> getShoppingList() throws SQLException {
+        return planDao.getPlannedIngredients()
+                .stream()
+                .map(UnitConverter::normalize)
+                .collect(Collectors.toList());
     }
-
 }

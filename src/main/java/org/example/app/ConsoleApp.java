@@ -1,15 +1,15 @@
 package org.example.app;
 
-
 import org.example.core.dao.DatabaseCleaner;
 import org.example.core.dao.DatabaseSeeder;
 import org.example.core.dao.MealDao;
 import org.example.core.dao.PlanDao;
-import org.example.core.model.Meal;
-import org.example.core.model.MealPlan;
+import org.example.core.model.*;
 import org.example.core.service.PlanService;
 import org.example.core.service.ShoppingListService;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -78,20 +78,51 @@ public class ConsoleApp {
         System.out.println("Which category do you want to print (breakfast, lunch, dinner)?");
         String mealCategory = readMealCategory();
 
-        List<Meal> mealsFromDbByCategory = mealDao.getAllMealsByCategory(mealCategory);
+        List<Meal> meals = mealDao.getAllMealsByCategory(mealCategory);
 
-        if (mealsFromDbByCategory.isEmpty()) {
+        if (meals.isEmpty()) {
             System.out.println("No meals found.");
             return;
         }
 
         System.out.println("Category: " + mealCategory);
-        mealsFromDbByCategory.forEach(Meal::printMealInfo);
+        meals.forEach(Meal::printMealInfo);
         System.out.println();
     }
 
     private void planMeals() throws SQLException {
-        planService.createWeeklyPlan(scan);
+        planService.clearPlan();
+
+        for (DaysOfTheWeek day : DaysOfTheWeek.values()) {
+            System.out.println(day);
+
+            for (String category : List.of("breakfast", "lunch", "dinner")) {
+
+                List<Meal> meals = planService.getMealsByCategory(category);
+                meals.forEach(m -> System.out.println(m.getNameOfMeal()));
+
+                System.out.println("Choose the " + category + " for " + day + ":");
+                Meal chosenMeal = chooseMeal(meals);
+
+                planService.addPlanItem(day, category, chosenMeal);
+            }
+
+            System.out.println("Meals planned for " + day + ".\n");
+        }
+    }
+
+    private Meal chooseMeal(List<Meal> meals) {
+        while (true) {
+            String input = scan.nextLine();
+
+            for (Meal meal : meals) {
+                if (meal.getNameOfMeal().equals(input)) {
+                    return meal;
+                }
+            }
+
+            System.out.println("This meal doesn’t exist. Choose again.");
+        }
     }
 
     private void showPlan() throws SQLException {
@@ -99,30 +130,39 @@ public class ConsoleApp {
 
         if (plans.isEmpty()) {
             System.out.println("Database does not contain any meal plans");
-        } else {
-            for (MealPlan plan : plans) {
-                System.out.println(plan.getDay());
-                System.out.println("Breakfast: " + plan.getBreakfast());
-                System.out.println("Lunch: " + plan.getLunch());
-                System.out.println("Dinner: " + plan.getDinner());
-                System.out.println();
-            }
+            return;
+        }
+
+        for (MealPlan plan : plans) {
+            System.out.println(plan.getDay());
+            System.out.println("Breakfast: " + plan.getBreakfast());
+            System.out.println("Lunch: " + plan.getLunch());
+            System.out.println("Dinner: " + plan.getDinner());
+            System.out.println();
         }
     }
 
     private void saveShoppingList() throws SQLException {
         if (planDao.getWeeklyPlan().isEmpty()) {
             System.out.println("Unable to save. Plan your meals first.");
-        } else {
-            System.out.println("Input a filename:");
-            String filename = scan.nextLine();
-
-            shoppingListService.saveShoppingList(filename);
-
-            System.out.println("Saved!");
+            return;
         }
-    }
 
+        System.out.println("Input a filename:");
+        String filename = scan.nextLine();
+
+        List<Ingredient> ingredients = shoppingListService.getShoppingList();
+
+        try (FileWriter writer = new FileWriter(filename)) {
+            for (Ingredient ingredient : ingredients) {
+                writer.write(ingredient.toString() + System.lineSeparator());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to write shopping list", e);
+        }
+
+        System.out.println("Saved!");
+    }
 
     private void resetDatabase() throws SQLException {
         DatabaseCleaner.clearAll(connection);
@@ -141,7 +181,7 @@ public class ConsoleApp {
             System.out.println("Wrong category! Choose: breakfast, lunch, dinner.");
         }
     }
-
 }
+
 
 
