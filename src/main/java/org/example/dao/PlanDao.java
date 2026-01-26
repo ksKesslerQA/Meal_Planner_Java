@@ -1,7 +1,9 @@
 package org.example.dao;
 
+import org.example.model.Ingredient;
 import org.example.model.MealPlan;
 import org.example.model.Unit;
+import org.example.util.UnitConverter;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -74,37 +76,33 @@ public class PlanDao {
             return plans;
         }
 
-    public void generateIngredients(String filename) throws SQLException {
+
+    public List<Ingredient> getPlannedIngredients() throws SQLException {
         String sql = """
-        SELECT i.name,
-               SUM(i.amount) AS total_amount,
-               i.unit
-        FROM ingredients i
-        JOIN plan p ON p.meal_id = i.meal_id
-        GROUP BY i.name, i.unit
-        ORDER BY i.name
-        """;
+                SELECT i.name,
+                       SUM(i.amount) AS total_amount,
+                       i.unit
+                FROM ingredients i
+                JOIN plan p ON p.meal_id = i.meal_id
+                GROUP BY i.name, i.unit
+                ORDER BY i.name
+                """;
+
+        List<Ingredient> ingredients = new ArrayList<>();
 
         try (
                 Statement st = connection.createStatement();
                 ResultSet rs = st.executeQuery(sql);
-                java.io.FileWriter writer = new java.io.FileWriter(filename)
         ) {
             while (rs.next()) {
-                String name = rs.getString("name");
-                double amount = rs.getDouble("total_amount");
-                String unit = rs.getString("unit");
-
-                if (amount == 1 && unit.equals("PCS")) {
-                    writer.write(name + System.lineSeparator());
-                } else {
-                    writer.write(name + " " + amount + " " +
-                            Unit.fromString(rs.getString("unit")) + System.lineSeparator());
-                }
+               ingredients.add(new Ingredient(
+                        rs.getString("name"),
+                        rs.getDouble("total_amount"),
+                        Unit.fromDb(rs.getString("unit"))
+                ));
             }
-        } catch (java.io.IOException e) {
-            throw new RuntimeException("Failed to write shopping list", e);
         }
-    }
 
+        return ingredients;
     }
+}
