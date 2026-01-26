@@ -1,8 +1,7 @@
-package org.example.model;
+package org.example.core.model;
 
-import org.example.util.IngredientParser;
+import org.example.core.util.IngredientParser;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 

@@ -1,9 +1,9 @@
-package org.example.service;
+package org.example.core.service;
 
-import org.example.dao.MealDao;
-import org.example.dao.PlanDao;
-import org.example.model.DaysOfTheWeek;
-import org.example.model.Meal;
+import org.example.core.dao.MealDao;
+import org.example.core.dao.PlanDao;
+import org.example.core.model.DaysOfTheWeek;
+import org.example.core.model.Meal;
 
 import java.sql.SQLException;
 import java.util.List;

@@ -1,8 +1,8 @@
-package org.example.service;
+package org.example.core.service;
 
-import org.example.dao.PlanDao;
-import org.example.model.Ingredient;
-import org.example.util.UnitConverter;
+import org.example.core.dao.PlanDao;
+import org.example.core.model.Ingredient;
+import org.example.core.util.UnitConverter;
 
 import java.io.FileWriter;
 import java.io.IOException;

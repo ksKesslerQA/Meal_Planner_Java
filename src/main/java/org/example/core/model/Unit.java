@@ -1,4 +1,4 @@
-package org.example.model;
+package org.example.core.model;
 
 public enum Unit {
     PCS("pcs"),

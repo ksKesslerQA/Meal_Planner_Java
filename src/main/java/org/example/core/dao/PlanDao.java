@@ -1,9 +1,8 @@
-package org.example.dao;
+package org.example.core.dao;
 
-import org.example.model.Ingredient;
-import org.example.model.MealPlan;
-import org.example.model.Unit;
-import org.example.util.UnitConverter;
+import org.example.core.model.Ingredient;
+import org.example.core.model.MealPlan;
+import org.example.core.model.Unit;
 
 import java.sql.*;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package org.example.dao;
+package org.example.core.dao;
 
 import java.sql.Connection;
 import java.sql.Statement;

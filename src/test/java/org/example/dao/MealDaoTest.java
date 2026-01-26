@@ -1,13 +1,9 @@
 package org.example.dao;
 
-import org.example.model.Meal;
-import org.example.dao.MealDao;
+import org.example.core.dao.MealDao;
 import org.junit.jupiter.api.*;
 
 import java.sql.*;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MealDaoTest {

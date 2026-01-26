@@ -1,14 +1,14 @@
 package org.example.app;
 
 
-import org.example.dao.DatabaseCleaner;
-import org.example.dao.DatabaseSeeder;
-import org.example.dao.MealDao;
-import org.example.dao.PlanDao;
-import org.example.model.Meal;
-import org.example.model.MealPlan;
-import org.example.service.PlanService;
-import org.example.service.ShoppingListService;
+import org.example.core.dao.DatabaseCleaner;
+import org.example.core.dao.DatabaseSeeder;
+import org.example.core.dao.MealDao;
+import org.example.core.dao.PlanDao;
+import org.example.core.model.Meal;
+import org.example.core.model.MealPlan;
+import org.example.core.service.PlanService;
+import org.example.core.service.ShoppingListService;
 
 import java.sql.Connection;
 import java.sql.SQLException;

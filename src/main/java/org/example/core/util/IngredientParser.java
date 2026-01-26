@@ -1,7 +1,7 @@
-package org.example.util;
+package org.example.core.util;
 
-import org.example.model.Ingredient;
-import org.example.model.Unit;
+import org.example.core.model.Ingredient;
+import org.example.core.model.Unit;
 
 import java.util.ArrayList;
 import java.util.Arrays;

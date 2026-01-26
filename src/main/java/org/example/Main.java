@@ -1,14 +1,12 @@
 package org.example;
 
 import org.example.app.ConsoleApp;
-import org.example.dao.*;
-import org.example.model.DaysOfTheWeek;
-import org.example.model.Meal;
-import org.example.model.MealPlan;
-import org.example.service.PlanService;
-import org.example.service.ShoppingListService;
+import org.example.core.dao.DatabaseInitializer;
+import org.example.core.dao.MealDao;
+import org.example.core.dao.PlanDao;
+import org.example.core.service.PlanService;
+import org.example.core.service.ShoppingListService;
 
-import java.util.List;
 import java.util.Scanner;
 import java.sql.Connection;
 import java.sql.DriverManager;
